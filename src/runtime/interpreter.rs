@@ -9,7 +9,6 @@ pub fn evaluate(ast_node: NodeType, env: &mut Environment) -> RuntimeValue {
         NodeType::NumericLiteral { value } => {
             RuntimeValue::NumberVal(NumberVal::new(ValueType::Number, value))
         }
-        NodeType::NullLiteral => RuntimeValue::NullVal(NullVal::new()),
 
         NodeType::BinaryExpr(binary_expr) => {
             return evaluate_binary_expression(binary_expr, env);

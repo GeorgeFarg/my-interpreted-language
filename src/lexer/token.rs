@@ -15,7 +15,6 @@ pub enum TokenType {
     AdittiveOperator,
     MultiplicitaveOperator,
     EOF,
-    Null,
 }
 #[derive(Debug, Clone)]
 pub struct Token {
@@ -34,7 +33,6 @@ fn keywords() -> &'static HashMap<&'static str, TokenType> {
     KEYWORDS.get_or_init(|| {
         let mut map: HashMap<&str, TokenType> = HashMap::new();
         map.insert("let", TokenType::Let);
-        map.insert("null", TokenType::Null);
         map
     })
 }

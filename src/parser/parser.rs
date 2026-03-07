@@ -126,8 +126,6 @@ impl Parser {
                     Err(_) => panic!("Invalid number literal"),
                 },
 
-                TokenType::Null => NodeType::NullLiteral,
-
                 TokenType::OpenParen => {
                     println!("OpenParen");
                     let value: NodeType = self.parse_expr();

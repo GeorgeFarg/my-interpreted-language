@@ -4,7 +4,6 @@ pub enum NodeType {
     NumericLiteral { value: f64 },
     Identifier(Identifier),
     BinaryExpr(BinaryExpr),
-    NullLiteral,
 }
 
 #[derive(Debug)]
