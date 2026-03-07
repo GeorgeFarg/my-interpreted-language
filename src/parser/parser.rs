@@ -5,7 +5,7 @@ use crate::{
     lexer::{Token, TokenType, tokenize},
     parser::{
         Identifier,
-        ast::{BinaryExpr, NodeType},
+        ast::{BinaryExpr, NodeType, VarDeclaration},
     },
 };
 pub struct Parser {
@@ -18,7 +18,7 @@ impl Parser {
         self.tokens = tokenize(source_code);
         let mut nodes: Vec<NodeType> = Vec::new();
         while !self.is_eof() {
-            nodes.push(self.parse_expr());
+            nodes.push(self.parse_stmt());
         }
         let program: NodeType = NodeType::Program(Program { body: nodes });
         return program;
@@ -35,9 +35,9 @@ impl Parser {
         self.tokens[self.pos].token_type == TokenType::EOF
     }
 
-    fn eat(&mut self) -> Option<Token> {
+    fn eat(&mut self) -> Option<&Token> {
         if !self.is_eof() {
-            let token: Token = self.tokens[self.pos].clone();
+            let token: &Token = &self.tokens[self.pos];
             self.pos += 1;
             return Some(token);
         } else {
@@ -47,6 +47,22 @@ impl Parser {
 
     fn at(&self) -> &Token {
         &self.tokens[self.pos]
+    }
+
+    fn expect(&mut self, token_type: TokenType, error_msg: &str) -> &Token {
+        match self.eat() {
+            Some(token) => {
+                if token.token_type == token_type {
+                    token
+                } else {
+                    panic!(
+                        "Parse Error: {}\nExpected {:#?} but got {:#?} ",
+                        error_msg, token_type, token
+                    )
+                }
+            }
+            None => panic!("Unexpected end of Input"),
+        }
     }
 
     // fn peek_back(&self) -> Option<&Token> {
@@ -67,6 +83,56 @@ impl Parser {
     // MultiplicitaveExpt
     // UnaryExpr
     // PrimaryExpr
+    fn parse_stmt(&mut self) -> NodeType {
+        match self.at().token_type {
+            TokenType::Let | TokenType::Const => self.parse_var_declaration(),
+            _ => self.parse_additive(),
+        }
+    }
+
+    fn parse_var_declaration(&mut self) -> NodeType {
+        // "This function should handle the case of (CONST | LET) IDENT;"
+
+        let is_constant = match self.eat() {
+            Some(token) => match token.token_type {
+                TokenType::Let => false,
+                TokenType::Const => true,
+                _ => panic!("Expected CONST or LET"),
+            },
+            None => panic!("Unexpected end of input!!"),
+        };
+
+        let identifier = self.expect(TokenType::Identifier, "").value.clone();
+
+        if self.at().token_type == TokenType::SemiColon {
+            self.eat();
+            if is_constant {
+                panic!("Must assign a value to a constant expression. No value found!!")
+            } else {
+                return NodeType::VarDeclaration(VarDeclaration::new(
+                    identifier,
+                    is_constant,
+                    None,
+                ));
+            }
+        }
+
+        self.expect(
+            TokenType::Equals,
+            "Expected equals token but following the identifier in var declaration",
+        );
+
+        let declaration = NodeType::VarDeclaration(VarDeclaration::new(
+            identifier,
+            is_constant,
+            Some(Box::new(self.parse_expr())),
+        ));
+
+        self.expect(TokenType::SemiColon, "");
+
+        declaration
+    }
+
     fn parse_expr(&mut self) -> NodeType {
         return self.parse_additive();
     }
@@ -87,11 +153,12 @@ impl Parser {
         let mut left = self.parse_multiplicitave();
         while self.at().token_type == TokenType::AdittiveOperator {
             if let Some(token) = self.eat() {
+                let operator = token.value.clone();
                 let right = self.parse_multiplicitave();
                 left = NodeType::BinaryExpr(BinaryExpr {
                     left: Box::new(left),
                     right: Box::new(right),
-                    operator: token.value,
+                    operator,
                 })
             }
         }
@@ -103,11 +170,12 @@ impl Parser {
         let mut left = self.parse_primary_expr();
         while self.at().token_type == TokenType::MultiplicitaveOperator {
             if let Some(token) = self.eat() {
+                let operator = token.value.clone();
                 let right = self.parse_primary_expr();
                 left = NodeType::BinaryExpr(BinaryExpr {
                     left: Box::new(left),
                     right: Box::new(right),
-                    operator: token.value,
+                    operator,
                 })
             }
         }
@@ -119,7 +187,7 @@ impl Parser {
         if let Some(token) = self.eat() {
             match token.token_type {
                 TokenType::Identifier => NodeType::Identifier(Identifier {
-                    symbol: token.value,
+                    symbol: token.value.clone(),
                 }),
                 TokenType::Number => match token.value.parse::<f64>() {
                     Ok(value) => NodeType::NumericLiteral { value },

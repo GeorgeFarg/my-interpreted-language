@@ -7,10 +7,12 @@ use super::Lexer;
 pub enum TokenType {
     Number,
     Identifier,
-    Equal,
+    Equals,
     Let,
+    Const,
     OpenParen,
     CloseParen,
+    SemiColon,
     // BinaryOperator,
     AdittiveOperator,
     MultiplicitaveOperator,
@@ -33,6 +35,7 @@ fn keywords() -> &'static HashMap<&'static str, TokenType> {
     KEYWORDS.get_or_init(|| {
         let mut map: HashMap<&str, TokenType> = HashMap::new();
         map.insert("let", TokenType::Let);
+        map.insert("const", TokenType::Const);
         map
     })
 }
@@ -48,6 +51,8 @@ pub fn tokenize(source_code: &str) -> Vec<Token> {
                 tokens.push(Token::new(String::from(c), TokenType::OpenParen));
             } else if c == ')' {
                 tokens.push(Token::new(String::from(c), TokenType::CloseParen));
+            } else if c == ';' {
+                tokens.push(Token::new(String::from(c), TokenType::SemiColon));
             } else if c == '+' || c == '-' {
                 tokens.push(Token::new(String::from(c), TokenType::AdittiveOperator));
             } else if c == '*' || c == '/' || c == '%' {
@@ -56,7 +61,7 @@ pub fn tokenize(source_code: &str) -> Vec<Token> {
                     TokenType::MultiplicitaveOperator,
                 ));
             } else if c == '=' {
-                tokens.push(Token::new(String::from(c), TokenType::Equal));
+                tokens.push(Token::new(String::from(c), TokenType::Equals));
             } else {
                 // Multi-char code
                 if c.is_ascii_digit() {
