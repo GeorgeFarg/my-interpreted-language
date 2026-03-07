@@ -4,12 +4,14 @@ use std::ops::{Add, Div, Mul, Rem, Sub};
 pub enum ValueType {
     Null,
     Number,
+    Boolean,
 }
 
 #[derive(Debug, Clone)]
 pub enum RuntimeValue {
     NullVal(NullVal),
     NumberVal(NumberVal),
+    BooleanVal(BoolVal),
 }
 
 #[derive(Debug, Clone)]
@@ -19,8 +21,23 @@ pub struct NullVal {
 
 impl NullVal {
     pub fn new() -> Self {
-        return NullVal {
+        return Self {
             val_type: ValueType::Null,
+        };
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct BoolVal {
+    val_type: ValueType,
+    value: bool,
+}
+
+impl BoolVal {
+    pub fn new(value: bool) -> Self {
+        return Self {
+            val_type: ValueType::Boolean,
+            value,
         };
     }
 }

@@ -13,7 +13,7 @@ use runtime::{RuntimeValue, evaluate};
 
 use crate::runtime::{
     Environment,
-    values::{NumberVal, ValueType},
+    values::{BoolVal, NumberVal, ValueType},
 };
 
 fn main() {
@@ -32,6 +32,8 @@ fn main() {
         "x",
         RuntimeValue::NumberVal(NumberVal::new(ValueType::Number, 100.0)),
     );
+    env.declare_var("true", RuntimeValue::BooleanVal(BoolVal::new(true)));
+    env.declare_var("false", RuntimeValue::BooleanVal(BoolVal::new(false)));
     loop {
         println!("Enter Valid code:");
         stdin().read_line(&mut input).expect("Failed to read line");
