@@ -19,6 +19,7 @@ impl Environment {
         value
     }
 
+    #[allow(unused)]
     pub fn assign_variable(&mut self, var_name: &str, value: RuntimeValue) -> RuntimeValue {
         let env = self.resolve(var_name);
         if let Some(inserted_value) = env.variables.insert(var_name.to_string(), value) {

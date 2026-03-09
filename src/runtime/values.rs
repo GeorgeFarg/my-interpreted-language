@@ -8,6 +8,7 @@ pub enum ValueType {
 }
 
 #[derive(Debug, Clone)]
+#[allow(unused)]
 pub enum RuntimeValue {
     NullVal(NullVal),
     NumberVal(NumberVal),
@@ -16,6 +17,7 @@ pub enum RuntimeValue {
 
 #[derive(Debug, Clone)]
 pub struct NullVal {
+    #[allow(unused)]
     val_type: ValueType,
 }
 
@@ -28,6 +30,7 @@ impl NullVal {
 }
 
 #[derive(Debug, Clone)]
+#[allow(unused)]
 pub struct BoolVal {
     val_type: ValueType,
     value: bool,
@@ -43,6 +46,7 @@ impl BoolVal {
 }
 
 #[derive(Debug, Clone)]
+#[allow(unused)]
 pub struct NumberVal {
     val_type: ValueType,
     value: f64,

@@ -13,7 +13,7 @@ use runtime::{RuntimeValue, evaluate};
 
 use crate::runtime::{
     Environment,
-    values::{BoolVal, NullVal, NumberVal, ValueType},
+    values::{BoolVal, NullVal},
 };
 
 fn main() {
@@ -28,10 +28,10 @@ fn main() {
     let mut parser = Parser::new();
     let mut input = String::new();
     let mut env = Environment::new();
-    env.declare_var(
-        "x",
-        RuntimeValue::NumberVal(NumberVal::new(ValueType::Number, 100.0)),
-    );
+    // env.declare_var(
+    //     "x",
+    //     RuntimeValue::NumberVal(NumberVal::new(ValueType::Number, 100.0)),
+    // );
     env.declare_var("true", RuntimeValue::BooleanVal(BoolVal::new(true)));
     env.declare_var("false", RuntimeValue::BooleanVal(BoolVal::new(false)));
     env.declare_var("null", RuntimeValue::NullVal(NullVal::new()));
@@ -46,8 +46,6 @@ fn main() {
         }
 
         let ast = parser.produce_ast(input.trim());
-
-        println!("The AST: {:#?}", ast);
 
         let result: RuntimeValue = evaluate(ast, &mut env);
         println!("Result: {:#?}", result);

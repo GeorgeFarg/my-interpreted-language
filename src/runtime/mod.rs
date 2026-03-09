@@ -1,4 +1,5 @@
 pub mod environment;
+pub(crate) mod eval;
 pub mod interpreter;
 pub mod values;
 

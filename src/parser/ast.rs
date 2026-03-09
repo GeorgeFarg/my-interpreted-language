@@ -11,9 +11,10 @@ pub enum NodeType {
 
 #[derive(Debug)]
 pub struct VarDeclaration {
+    #[allow(dead_code)]
     is_constant: bool,
-    identifier: String,
-    value: Option<Box<NodeType>>, // this field is an option to handle nonasignment declaration like lex x;
+    pub(crate) identifier: String,
+    pub(crate) value: Option<Box<NodeType>>, // this field is an option to handle nonasignment declaration like lex x;
 }
 
 impl VarDeclaration {
@@ -41,10 +42,4 @@ pub struct BinaryExpr {
     pub(crate) left: Box<NodeType>,
     pub(crate) right: Box<NodeType>,
     pub(crate) operator: String,
-}
-
-impl Program {
-    pub fn new(body: Vec<NodeType>) -> Self {
-        Program { body }
-    }
 }
