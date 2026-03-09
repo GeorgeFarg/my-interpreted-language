@@ -1,5 +1,8 @@
 use crate::{
-    parser::{Identifier, ast::BinaryExpr},
+    parser::{
+        AssignmentExpr, Identifier,
+        ast::{BinaryExpr, NodeType},
+    },
     runtime::{Environment, NullVal, NumberVal, RuntimeValue, evaluate},
 };
 
@@ -37,4 +40,19 @@ fn evaluate_numeric_binary_expression(lhs: NumberVal, rhs: NumberVal, operator: 
 pub fn eval_identifier(idt: Identifier, env: &mut Environment) -> RuntimeValue {
     let val = env.lookup_var(&idt.symbol);
     val.clone()
+}
+
+pub fn eval_assignment(node: AssignmentExpr, env: &mut Environment) -> RuntimeValue {
+    let assignee = *node.assignee;
+    if !matches!(assignee, NodeType::Identifier(_)) {}
+
+    match assignee {
+        NodeType::Identifier(identifier) => {
+            let var_name = identifier.symbol;
+            let value = evaluate(*node.value, env);
+            env.assign_variable(&var_name, value)
+        }
+
+        _ => panic!("Invalid LHS inaide assignment expression {:#?}", assignee),
+    }
 }

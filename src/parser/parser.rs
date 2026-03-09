@@ -5,8 +5,9 @@ use crate::{
     lexer::{Token, TokenType, tokenize},
     parser::{
         Identifier,
-        ast::{BinaryExpr, NodeType, VarDeclaration},
+        ast::{AssignmentExpr, BinaryExpr, NodeType, VarDeclaration},
     },
+    runtime::RuntimeValue,
 };
 pub struct Parser {
     tokens: Vec<Token>,
@@ -65,14 +66,6 @@ impl Parser {
         }
     }
 
-    // fn peek_back(&self) -> Option<&Token> {
-    //     if self.pos > 0 {
-    //         Some(&self.tokens[self.pos - 1])
-    //     } else {
-    //         None
-    //     }
-    // }
-
     // Order of Prescidence 👇
     // AssignmentExpr
     // MemberExpr
@@ -86,7 +79,7 @@ impl Parser {
     fn parse_stmt(&mut self) -> NodeType {
         match self.at().token_type {
             TokenType::Let | TokenType::Const => self.parse_var_declaration(),
-            _ => self.parse_additive(),
+            _ => self.parse_expr(),
         }
     }
 
@@ -134,21 +127,21 @@ impl Parser {
     }
 
     fn parse_expr(&mut self) -> NodeType {
-        return self.parse_additive();
+        return self.parse_assignment_expr();
     }
 
-    // Example: 10 + 5 - 5 =should be>
-    /**
-     * {
-     *      left: {
-     *          left: 10,
-     *          right: 5,
-     *          operator: +
-     *      },
-     *      right: 5,
-     *      operator: -
-     * }
-     */
+    fn parse_assignment_expr(&mut self) -> NodeType {
+        let left = self.parse_additive();
+
+        if self.at().token_type == TokenType::Equals {
+            self.eat(); // advance past the Equal sign
+            let value = self.parse_assignment_expr();
+            return NodeType::AssignmentExpr(AssignmentExpr::new(Box::new(left), Box::new(value)));
+        }
+
+        left
+    }
+
     fn parse_additive(&mut self) -> NodeType {
         let mut left = self.parse_multiplicitave();
         while self.at().token_type == TokenType::AdittiveOperator {

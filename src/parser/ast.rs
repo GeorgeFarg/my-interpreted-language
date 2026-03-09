@@ -7,6 +7,18 @@ pub enum NodeType {
     NumericLiteral { value: f64 },
     Identifier(Identifier),
     BinaryExpr(BinaryExpr),
+    AssignmentExpr(AssignmentExpr),
+}
+
+#[derive(Debug)]
+pub struct AssignmentExpr {
+    pub(crate) assignee: Box<NodeType>,
+    pub(crate) value: Box<NodeType>,
+}
+impl AssignmentExpr {
+    pub fn new(assignee: Box<NodeType>, value: Box<NodeType>) -> Self {
+        Self { assignee, value }
+    }
 }
 
 #[derive(Debug)]
