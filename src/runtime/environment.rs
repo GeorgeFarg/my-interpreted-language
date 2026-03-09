@@ -1,14 +1,20 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use super::RuntimeValue;
 
 pub struct Environment {
     parent: Option<Box<Environment>>,
     variables: HashMap<String, RuntimeValue>,
+    constants: HashSet<String>,
 }
 
 impl Environment {
-    pub fn declare_var(&mut self, var_name: &str, value: RuntimeValue) -> RuntimeValue {
+    pub fn declare_var(
+        &mut self,
+        var_name: &str,
+        value: RuntimeValue,
+        is_constant: bool,
+    ) -> RuntimeValue {
         if self.variables.contains_key(var_name) {
             panic!(
                 "Cannot declare variable {}. As it already is defined",
@@ -16,12 +22,26 @@ impl Environment {
             );
         }
         self.variables.insert(var_name.to_string(), value.clone());
+
+        if is_constant {
+            self.constants.insert(var_name.to_string());
+        }
+
         value
     }
 
     #[allow(unused)]
     pub fn assign_variable(&mut self, var_name: &str, value: RuntimeValue) -> RuntimeValue {
         let env = self.resolve(var_name);
+
+        // cannot assign to constant
+        if env.constants.contains(var_name) {
+            panic!(
+                "Cannot reassign to a variable {} as it was declared constant",
+                var_name
+            )
+        }
+
         if let Some(inserted_value) = env.variables.insert(var_name.to_string(), value) {
             inserted_value
         } else {
@@ -56,6 +76,7 @@ impl Environment {
         Self {
             parent: None,
             variables: HashMap::new(),
+            constants: HashSet::new(),
         }
     }
 }

@@ -32,9 +32,13 @@ fn main() {
     //     "x",
     //     RuntimeValue::NumberVal(NumberVal::new(ValueType::Number, 100.0)),
     // );
-    env.declare_var("true", RuntimeValue::BooleanVal(BoolVal::new(true)));
-    env.declare_var("false", RuntimeValue::BooleanVal(BoolVal::new(false)));
-    env.declare_var("null", RuntimeValue::NullVal(NullVal::new()));
+    env.declare_var("true", RuntimeValue::BooleanVal(BoolVal::new(true)), false);
+    env.declare_var(
+        "false",
+        RuntimeValue::BooleanVal(BoolVal::new(false)),
+        false,
+    );
+    env.declare_var("null", RuntimeValue::NullVal(NullVal::new()), true);
     loop {
         println!("Enter Valid code:");
         stdin().read_line(&mut input).expect("Failed to read line");

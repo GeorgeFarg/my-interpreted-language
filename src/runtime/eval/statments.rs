@@ -20,7 +20,11 @@ pub fn eval_var_declaration(
     match var_declaration.value {
         Some(node) => {
             let value = evaluate(*node, env);
-            env.declare_var(&var_declaration.identifier, value)
+            env.declare_var(
+                &var_declaration.identifier,
+                value,
+                var_declaration.is_constant,
+            )
         }
         None => RuntimeValue::NullVal(NullVal::new()),
     }

@@ -12,7 +12,7 @@ pub enum NodeType {
 #[derive(Debug)]
 pub struct VarDeclaration {
     #[allow(dead_code)]
-    is_constant: bool,
+    pub(crate) is_constant: bool,
     pub(crate) identifier: String,
     pub(crate) value: Option<Box<NodeType>>, // this field is an option to handle nonasignment declaration like lex x;
 }
